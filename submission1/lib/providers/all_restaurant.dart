@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
+import 'package:submission1/api/apiservice.dart';
 import 'package:submission1/database/database_helper.dart';
 import 'package:submission1/model/favorite.dart';
 
@@ -86,11 +87,10 @@ class RestauranProvider extends ChangeNotifier {
     state = ResultState.loading;
     final status = await Connectivity().checkConnectivity();
     if (status != ConnectivityResult.none) {
-      Uri url = Uri.parse("https://restaurant-api.dicoding.dev/list");
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        _allrestauran = (jsonDecode(response.body))['restaurants'];
-        _restaurant = (jsonDecode(response.body))['restaurants'];
+      final response = await ApiService.getRestauran();
+      if (response['statusCode'] == 200) {
+        _allrestauran = response['allRestauran'];
+        _restaurant = response['restaurant'];
         state = ResultState.hasdData;
         _internet = true;
         notifyListeners();
